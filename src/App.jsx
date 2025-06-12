@@ -44,7 +44,7 @@ export default function App() {
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false);
   const [fullDescription, setFullDescription] = useState('');
 
-  const categories = ['Food', 'Transport', 'Office', 'Entertainment', 'Health', 'Utilities', 'Other'];
+  const categories = ['Food', 'Water','Taxi','Utilities','Rooms','Rafting','Renting','Other'];
 
   // Fetch data from Supabase
   const fetchBudgetData = useCallback(async () => {
@@ -310,13 +310,13 @@ export default function App() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                 <input
-                  type="email"
+                  type="input"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-4 py-2 text-gray-700 bg-gray-50 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="Enter your email"
+                  placeholder="Enter your Name"
                 />
               </div>
               <div>
