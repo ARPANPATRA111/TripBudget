@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { Users, Eye, EyeOff, Plus, X, DollarSign, Calendar, Tag, Edit, Search, Filter, Download, ArrowUp, ArrowDown } from 'lucide-react';
+import { Users, Eye, EyeOff, Plus, X, DollarSign, Calendar, Tag, Edit, Search, PieChart, Download, ArrowUp, ArrowDown } from 'lucide-react';
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
 // --- SUPABASE SETUP ---
@@ -42,17 +42,17 @@ const getColorFromEmail = (email) => {
 export default function App() {
   // State variables
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showStats, setShowStats] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [usersData, setUsersData] = useState({});
   const [loading, setLoading] = useState(true);
   const [showAllUsers, setShowAllUsers] = useState(false);
-  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [budgetInput, setBudgetInput] = useState('');
   const [showTotalBudget, setShowTotalBudget] = useState(false);
-
+  const [visibleExpenseCount, setVisibleExpenseCount] = useState(10);
   // Dialog state
   const [showExpenseDialog, setShowExpenseDialog] = useState(false);
   const [expenseAmount, setExpenseAmount] = useState('');
@@ -152,7 +152,7 @@ export default function App() {
   const filteredExpenses = useMemo(() => {
     let filtered = [...allExpensesWithUsers];
 
-    // Apply search filter
+    // Apply search filter - now works on expense descriptions
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter(expense =>
@@ -190,6 +190,25 @@ export default function App() {
     return allUsersStats.reduce((sum, user) => sum + user.remaining, 0);
   }, [allUsersStats]);
 
+  // Calculate category spending
+  const categorySpending = useMemo(() => {
+    const spending = {};
+    const totalBudgetSum = allUsersStats.reduce((sum, user) => sum + user.budget, 0);
+
+    allExpensesWithUsers.forEach(expense => {
+      if (!spending[expense.category]) {
+        spending[expense.category] = 0;
+      }
+      spending[expense.category] += expense.amount;
+    });
+
+    return Object.entries(spending).map(([category, amount]) => ({
+      category,
+      amount,
+      percentage: totalBudgetSum > 0 ? (amount / totalBudgetSum) * 100 : 0
+    }));
+  }, [allExpensesWithUsers, allUsersStats]);
+
   // Request sort
   const requestSort = (key) => {
     let direction = 'desc';
@@ -210,6 +229,7 @@ export default function App() {
 
   // Authentication handlers
   const handleLogin = () => {
+    const email = `${name.toLowerCase()}`; // Convert name to lowercase and add domain
     const user = USER_CREDENTIALS[email];
     if (user && user.password === password) {
       setIsLoggedIn(true);
@@ -217,14 +237,14 @@ export default function App() {
       setError('');
       setPassword('');
     } else {
-      setError('Invalid email or password. Please try again.');
+      setError('Invalid name or password. Please try again.');
     }
   };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
     setCurrentUser(null);
-    setEmail('');
+    setName('');
     setPassword('');
     setShowAllUsers(false);
     setShowExpenseDialog(false);
@@ -443,19 +463,19 @@ export default function App() {
               <div className="mx-auto w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-4">
                 <DollarSign className="w-8 h-8 text-white" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-1">Budget Tracker</h1>
-              <p className="text-gray-600 text-sm">Manage your finances efficiently</p>
+              <h1 className="text-2xl font-bold text-gray-900 mb-1">Trip Budget Tracker</h1>
+              <p className="text-gray-600 text-sm">Manage your group finances efficiently</p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
                 <input
-                  type="input"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   className="w-full px-4 py-2 text-gray-700 bg-gray-50 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="Enter your Name"
+                  placeholder="Enter your name"
                 />
               </div>
               <div>
@@ -518,20 +538,26 @@ export default function App() {
 
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => setShowFilters(!showFilters)}
-                className={`p-1.5 rounded-md transition-colors ${showFilters
-                    ? 'bg-blue-100 text-blue-600'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                onClick={() => setShowStats(!showStats)}
+                className={`p-1.5 rounded-md transition-colors ${showStats
+                  ? 'bg-blue-100 text-blue-600'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
-                title="Toggle filters"
+                title="View spending stats"
               >
-                <Filter size={16} />
+                <PieChart size={16} />
+              </button>
+              <button
+                onClick={() => setShowTotalBudget(!showTotalBudget)}
+                className="px-2 py-1 text-xs font-medium bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200"
+              >
+                ${totalBudget.toFixed(2)}
               </button>
               <button
                 onClick={() => setShowAllUsers(!showAllUsers)}
                 className={`p-1.5 rounded-md transition-colors ${showAllUsers
-                    ? 'bg-purple-100 text-purple-600'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-purple-100 text-purple-600'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 title={showAllUsers ? 'Hide all users' : 'Show all users'}
               >
@@ -641,55 +667,40 @@ export default function App() {
           </div>
         )}
 
-        {/* Search and filter controls */}
-        {/* {currentUserData.budgetSet && (
+        {/* Stats section - shown when showStats is true */}
+        {showStats && (
           <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-4">
-            <div className="flex items-center mb-3">
-              <Search className="w-5 h-5 text-gray-400 mr-2" />
-              <input
-                type="text"
-                placeholder="Search expenses..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="flex-1 px-3 py-2 text-gray-700 bg-gray-50 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <Filter className="w-5 h-5 text-gray-400 mr-2" />
-                <div className="flex flex-wrap gap-2">
-                  {categories.map(category => (
-                    <button
-                      key={category}
-                      onClick={() => toggleCategory(category)}
-                      className={`text-xs px-2 py-1 rounded-full ${
-                        selectedCategories.includes(category)
-                          ? 'bg-blue-100 text-blue-800 border border-blue-200'
-                          : 'bg-gray-100 text-gray-800 border border-gray-200 hover:bg-gray-200'
-                      }`}
-                    >
-                      {category}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-medium text-gray-900 flex items-center">
+                <PieChart className="mr-2 w-4 h-4" />
+                Spending by Category
+              </h3>
               <button
-                onClick={exportToCSV}
-                disabled={exporting}
-                className="flex items-center text-xs px-3 py-1.5 bg-green-100 text-green-800 rounded-lg hover:bg-green-200 disabled:opacity-50"
+                onClick={() => setShowStats(false)}
+                className="text-gray-400 hover:text-gray-500"
               >
-                {exporting ? 'Exporting...' : (
-                  <>
-                    <Download size={14} className="mr-1" />
-                    Export
-                  </>
-                )}
+                <X size={16} />
               </button>
             </div>
+
+            <div className="space-y-3">
+              {categorySpending.map(({ category, amount, percentage }) => (
+                <div key={category} className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="font-medium">{category}</span>
+                    <span>${amount.toFixed(2)} ({percentage.toFixed(1)}%)</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="bg-blue-600 h-2 rounded-full"
+                      style={{ width: `${percentage}%` }}
+                    ></div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-        )} */}
+        )}
 
         {/* All users overview */}
         {showAllUsers && (
@@ -703,8 +714,8 @@ export default function App() {
                 <div
                   key={user.email}
                   className={`p-3 rounded-lg border transition-all ${user.email === currentUser.email
-                      ? 'border-blue-200 bg-blue-50'
-                      : 'border-gray-200 bg-white hover:border-gray-300'
+                    ? 'border-blue-200 bg-blue-50'
+                    : 'border-gray-200 bg-white hover:border-gray-300'
                     }`}
                 >
                   <div className="flex items-center justify-between mb-2">
@@ -749,65 +760,7 @@ export default function App() {
           </div>
         )}
 
-        {/* Filter section - shown when showFilters is true */}
-        {showFilters && (
-          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-gray-900">Filters</h3>
-              <button
-                onClick={() => setShowFilters(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X size={16} />
-              </button>
-            </div>
 
-            <div className="flex items-center mb-3">
-              <Search className="w-5 h-5 text-gray-400 mr-2" />
-              <input
-                type="text"
-                placeholder="Search expenses..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="flex-1 px-3 py-2 text-gray-700 bg-gray-50 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              />
-            </div>
-
-            <div className="mb-2">
-              <div className="flex items-center text-sm text-gray-600 mb-2">
-                <Filter className="w-4 h-4 text-gray-400 mr-1" />
-                <span>Categories</span>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {categories.map(category => (
-                  <button
-                    key={category}
-                    onClick={() => toggleCategory(category)}
-                    className={`text-xs px-2 py-1 rounded-full ${selectedCategories.includes(category)
-                        ? 'bg-blue-100 text-blue-800 border border-blue-200'
-                        : 'bg-gray-100 text-gray-800 border border-gray-200 hover:bg-gray-200'
-                      }`}
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <button
-              onClick={exportToCSV}
-              disabled={exporting}
-              className="w-full flex items-center justify-center text-xs px-3 py-1.5 bg-green-100 text-green-800 rounded-lg hover:bg-green-200 disabled:opacity-50 mt-2"
-            >
-              {exporting ? 'Exporting...' : (
-                <>
-                  <Download size={14} className="mr-1" />
-                  Export to CSV
-                </>
-              )}
-            </button>
-          </div>
-        )}
 
         {/* Expense lists */}
         <div className="space-y-4">
@@ -899,8 +852,22 @@ export default function App() {
             )}
           </div>
 
+          {/* Search section */}
+          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-4">
+            <div className="flex items-center">
+              <Search className="w-5 h-5 text-gray-400 mr-2" />
+              <input
+                type="text"
+                placeholder="Search expenses..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="flex-1 px-3 py-2 text-gray-700 bg-gray-50 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              />
+            </div>
+          </div>
+
           {/* All users' recent expenses */}
-          {showAllUsers && (
+          {
             <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold text-gray-900 flex items-center">
@@ -928,7 +895,7 @@ export default function App() {
               </div>
               {filteredExpenses.length > 0 ? (
                 <div className="space-y-2">
-                  {filteredExpenses.slice(0, 10).map((expense, index) => (
+                  {filteredExpenses.slice(0, visibleExpenseCount).map((expense, index) => (
                     <div key={`${expense.id}-${index}`} className="p-3 bg-gray-50 rounded-lg border border-gray-200">
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
@@ -977,6 +944,36 @@ export default function App() {
                       </div>
                     </div>
                   ))}
+
+                  {/* Show More/Less button */}
+                  {filteredExpenses.length > 10 && (
+                    <div className="text-center pt-3">
+                      <button
+                        onClick={() => {
+                          if (visibleExpenseCount >= filteredExpenses.length) {
+                            // If all expenses are shown, reset to show only 10
+                            setVisibleExpenseCount(10);
+                          } else {
+                            // Show 10 more expenses
+                            setVisibleExpenseCount(prev => Math.min(prev + 10, filteredExpenses.length));
+                          }
+                        }}
+                        className="flex items-center justify-center space-x-1 mx-auto px-3 py-1.5 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all"
+                      >
+                        <span>
+                          {visibleExpenseCount >= filteredExpenses.length
+                            ? 'Show Less'
+                            : `Show More (${Math.min(10, filteredExpenses.length - visibleExpenseCount)} more)`
+                          }
+                        </span>
+                        {visibleExpenseCount >= filteredExpenses.length ? (
+                          <ArrowUp size={16} />
+                        ) : (
+                          <ArrowDown size={16} />
+                        )}
+                      </button>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="text-center py-8">
@@ -988,7 +985,7 @@ export default function App() {
                 </div>
               )}
             </div>
-          )}
+          }
         </div>
       </main>
 
