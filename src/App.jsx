@@ -41,6 +41,10 @@ const getColorFromEmail = (email) => {
 
 export default function App() {
   // State variables
+  const [showFilters, setShowFilters] = useState(false);
+  const [dateRange, setDateRange] = useState({ start: '', end: '' });
+  const [amountRange, setAmountRange] = useState({ min: '', max: '' });
+  const [selectedUsers, setSelectedUsers] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
@@ -152,7 +156,7 @@ export default function App() {
   const filteredExpenses = useMemo(() => {
     let filtered = [...allExpensesWithUsers];
 
-    // Apply search filter - now works on expense descriptions
+    // Apply search filter
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter(expense =>
@@ -169,6 +173,32 @@ export default function App() {
       );
     }
 
+    // Apply user filter
+    if (selectedUsers.length > 0) {
+      filtered = filtered.filter(expense =>
+        selectedUsers.includes(expense.userEmail)
+      );
+    }
+
+    // Apply date range filter
+    if (dateRange.start || dateRange.end) {
+      filtered = filtered.filter(expense => {
+        const expenseDate = new Date(expense.timestamp).toISOString().split('T')[0];
+        const startMatch = !dateRange.start || expenseDate >= dateRange.start;
+        const endMatch = !dateRange.end || expenseDate <= dateRange.end;
+        return startMatch && endMatch;
+      });
+    }
+
+    // Apply amount range filter
+    if (amountRange.min || amountRange.max) {
+      filtered = filtered.filter(expense => {
+        const minMatch = !amountRange.min || expense.amount >= parseFloat(amountRange.min);
+        const maxMatch = !amountRange.max || expense.amount <= parseFloat(amountRange.max);
+        return minMatch && maxMatch;
+      });
+    }
+
     // Apply sorting
     if (sortConfig.key) {
       filtered.sort((a, b) => {
@@ -183,7 +213,33 @@ export default function App() {
     }
 
     return filtered;
-  }, [allExpensesWithUsers, searchTerm, selectedCategories, sortConfig]);
+  }, [allExpensesWithUsers, searchTerm, selectedCategories, selectedUsers, dateRange, amountRange, sortConfig]);
+
+  const toggleUserFilter = (userEmail) => {
+    setSelectedUsers(prev =>
+      prev.includes(userEmail)
+        ? prev.filter(u => u !== userEmail)
+        : [...prev, userEmail]
+    );
+  };
+
+  const clearAllFilters = () => {
+    setSelectedCategories([]);
+    setSelectedUsers([]);
+    setDateRange({ start: '', end: '' });
+    setAmountRange({ min: '', max: '' });
+    setSearchTerm('');
+  };
+
+  const getActiveFilterCount = () => {
+    let count = 0;
+    if (selectedCategories.length > 0) count++;
+    if (selectedUsers.length > 0) count++;
+    if (dateRange.start || dateRange.end) count++;
+    if (amountRange.min || amountRange.max) count++;
+    if (searchTerm) count++;
+    return count;
+  };
 
   // Calculate total budget across all users
   const totalBudget = useMemo(() => {
@@ -852,20 +908,218 @@ export default function App() {
             )}
           </div>
 
-          {/* Search section */}
           <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-4">
-            <div className="flex items-center">
+            {/* Search bar */}
+            <div className="flex items-center mb-3">
               <Search className="w-5 h-5 text-gray-400 mr-2" />
               <input
                 type="text"
-                placeholder="Search expenses..."
+                placeholder="Search expenses by description, category, or user..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="flex-1 px-3 py-2 text-gray-700 bg-gray-50 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`ml-2 p-2 rounded-lg transition-colors relative ${showFilters ? 'bg-blue-100 text-blue-600' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                  }`}
+                title="Toggle filters"
+              >
+                <Tag size={18} />
+                {getActiveFilterCount() > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {getActiveFilterCount()}
+                  </span>
+                )}
+              </button>
+              <button
+                onClick={exportToCSV}
+                disabled={exporting}
+                className="ml-2 p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                title="Export to CSV"
+              >
+                {exporting ? (
+                  <div className="animate-spin h-4 w-4 border-b-2 border-gray-500 rounded-full"></div>
+                ) : (
+                  <Download size={18} />
+                )}
+              </button>
             </div>
-          </div>
 
+            {/* Filter section */}
+            {showFilters && (
+              <div className="border-t pt-4 space-y-4">
+                {/* Category filters */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Categories</label>
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map(category => (
+                      <button
+                        key={category}
+                        onClick={() => toggleCategory(category)}
+                        className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${selectedCategories.includes(category)
+                            ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                            : 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200'
+                          }`}
+                      >
+                        {category}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* User filters */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Users</label>
+                  <div className="flex flex-wrap gap-2">
+                    {Object.keys(usersData).map(userEmail => (
+                      <button
+                        key={userEmail}
+                        onClick={() => toggleUserFilter(userEmail)}
+                        className={`flex items-center px-3 py-1 rounded-full text-sm font-medium transition-colors ${selectedUsers.includes(userEmail)
+                            ? 'bg-purple-100 text-purple-800 border border-purple-200'
+                            : 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200'
+                          }`}
+                      >
+                        <div
+                          className="w-4 h-4 rounded-full mr-1.5"
+                          style={{ backgroundColor: getColorFromEmail(userEmail) }}
+                        ></div>
+                        {userEmail.split('@')[0]}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Date range filter */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">From Date</label>
+                    <input
+                      type="date"
+                      value={dateRange.start}
+                      onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+                      className="w-full px-3 py-2 text-gray-700 bg-gray-50 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">To Date</label>
+                    <input
+                      type="date"
+                      value={dateRange.end}
+                      onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+                      className="w-full px-3 py-2 text-gray-700 bg-gray-50 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* Amount range filter */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Min Amount ($)</label>
+                    <input
+                      type="number"
+                      placeholder="0.00"
+                      step="0.01"
+                      min="0"
+                      value={amountRange.min}
+                      onChange={(e) => setAmountRange(prev => ({ ...prev, min: e.target.value }))}
+                      className="w-full px-3 py-2 text-gray-700 bg-gray-50 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Max Amount ($)</label>
+                    <input
+                      type="number"
+                      placeholder="1000.00"
+                      step="0.01"
+                      min="0"
+                      value={amountRange.max}
+                      onChange={(e) => setAmountRange(prev => ({ ...prev, max: e.target.value }))}
+                      className="w-full px-3 py-2 text-gray-700 bg-gray-50 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* Filter actions */}
+                <div className="flex justify-between items-center pt-2 border-t">
+                  <div className="text-sm text-gray-600">
+                    Showing {filteredExpenses.length} of {allExpensesWithUsers.length} expenses
+                  </div>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={clearAllFilters}
+                      className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                    >
+                      Clear All
+                    </button>
+                    <button
+                      onClick={() => setShowFilters(false)}
+                      className="px-3 py-1.5 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                    >
+                      Apply Filters
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Active filter chips */}
+            {(selectedCategories.length > 0 || selectedUsers.length > 0 || dateRange.start || dateRange.end || amountRange.min || amountRange.max) && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {selectedCategories.map(category => (
+                  <span
+                    key={`cat-${category}`}
+                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                  >
+                    Category: {category}
+                    <button
+                      onClick={() => toggleCategory(category)}
+                      className="ml-1 text-blue-500 hover:text-blue-700"
+                    >
+                      <X size={12} />
+                    </button>
+                  </span>
+                ))}
+                {selectedUsers.map(userEmail => (
+                  <span
+                    key={`user-${userEmail}`}
+                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800"
+                  >
+                    User: {userEmail.split('@')[0]}
+                    <button
+                      onClick={() => toggleUserFilter(userEmail)}
+                      className="ml-1 text-purple-500 hover:text-purple-700"
+                    >
+                      <X size={12} />
+                    </button>
+                  </span>
+                ))}
+                {(dateRange.start || dateRange.end) && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    Date: {dateRange.start || 'Any'} - {dateRange.end || 'Any'}
+                    <button
+                      onClick={() => setDateRange({ start: '', end: '' })}
+                      className="ml-1 text-green-500 hover:text-green-700"
+                    >
+                      <X size={12} />
+                    </button>
+                  </span>
+                )}
+                {(amountRange.min || amountRange.max) && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                    Amount: ${amountRange.min || '0'} - ${amountRange.max || '∞'}
+                    <button
+                      onClick={() => setAmountRange({ min: '', max: '' })}
+                      className="ml-1 text-orange-500 hover:text-orange-700"
+                    >
+                      <X size={12} />
+                    </button>
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
           {/* All users' recent expenses */}
           {
             <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
