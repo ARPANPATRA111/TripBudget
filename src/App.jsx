@@ -18,6 +18,7 @@ const USER_CREDENTIALS = {
   [import.meta.env.VITE_USER2]: { password: import.meta.env.VITE_USER2_PASS, role: 'User' },
   [import.meta.env.VITE_USER3]: { password: import.meta.env.VITE_USER3_PASS, role: 'User' },
   [import.meta.env.VITE_USER4]: { password: import.meta.env.VITE_USER4_PASS, role: 'User' },
+  [import.meta.env.VITE_VIEWER_USER]: { password: import.meta.env.VITE_VIEWER_PASS, role: 'Viewer' },
 };
 
 // Helper function to get user initials
@@ -560,6 +561,8 @@ export default function App() {
 
               <div className="bg-gray-50 rounded-lg p-3 text-center">
                 <p className="text-xs text-gray-600 mb-1">Contact admin for access</p>
+                <p className="text-xs text-gray-600 mb-1">Name:- demo</p>
+                <p className="text-xs text-gray-600 mb-1">Password:- 159</p>
               </div>
             </div>
           </div>
@@ -568,31 +571,35 @@ export default function App() {
     );
   }
 
+  // Check if user is Viewer (read-only)
+  const isViewer = currentUser.role === 'Viewer';
+  const canEdit = !isViewer && currentUserData.budgetSet;
+
   // Main app
   return (
     <div className="bg-gray-50 min-h-screen">
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-200">
-        <div className="px-4">
-          <div className="flex justify-between items-center h-14">
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-14 sm:h-16">
             <div className="flex items-center space-x-2">
               <div
-                className="w-7 h-7 rounded-md flex items-center justify-center text-white"
+                className="w-7 h-7 sm:w-8 sm:h-8 rounded-md flex items-center justify-center text-white"
                 style={{ backgroundColor: getColorFromEmail(currentUser.email) }}
               >
                 {getInitials(currentUser.email)}
               </div>
               <div>
-                <h1 className="text-sm text-gray-900 truncate max-w-[120px] uppercase font-bold">
+                <h1 className="text-sm sm:text-base text-gray-900 truncate max-w-[120px] sm:max-w-[180px] uppercase font-bold">
                   {currentUser.email.split('@')[0]}
                 </h1>
-                <span className={`text-xs ${currentUser.role === 'Admin' ? 'text-blue-400' : 'text-green-600'}`}>
+                <span className={`text-xs ${currentUser.role === 'Admin' ? 'text-blue-400' : currentUser.role === 'Viewer' ? 'text-gray-500' : 'text-green-600'}`}>
                   {currentUser.role}
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <button
                 onClick={() => setShowStats(!showStats)}
                 className={`p-1.5 rounded-md transition-colors ${showStats
@@ -605,7 +612,8 @@ export default function App() {
               </button>
               <button
                 onClick={() => setShowTotalBudget(!showTotalBudget)}
-                className="px-2 py-1 text-xs font-medium bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200"
+                title="Overall Trip Budget"
+                className="px-2 py-1 text-xs sm:text-sm font-medium bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200"
               >
                 ${totalBudget.toFixed(2)}
               </button>
@@ -621,7 +629,7 @@ export default function App() {
               </button>
               <button
                 onClick={handleLogout}
-                className="px-3 py-1.5 text-xs font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all"
+                className="px-3 py-1.5 text-xs sm:text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all"
               >
                 Logout
               </button>
@@ -631,36 +639,36 @@ export default function App() {
       </header>
 
       {/* Main content */}
-      <main className="px-4 py-4">
+      <main className="px-4 py-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         {/* Budget summary cards */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
           <div className="bg-gradient-to-br from-green-400 to-green-600 p-4 rounded-lg shadow text-white">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-xs font-medium">Budget</p>
-                <p className="text-lg font-bold">${(currentUserData.budget || 0).toFixed(2)}</p>
+                <p className="text-green-100 text-xs sm:text-sm font-medium">Budget</p>
+                <p className="text-lg sm:text-xl font-bold">${(currentUserData.budget || 0).toFixed(2)}</p>
               </div>
-              <DollarSign className="w-6 h-6 text-green-200" />
+              <DollarSign className="w-6 h-6 sm:w-7 sm:h-7 text-green-200" />
             </div>
           </div>
 
           <div className="bg-gradient-to-br from-red-400 to-red-600 p-4 rounded-lg shadow text-white">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-red-100 text-xs font-medium">Expenses</p>
-                <p className="text-lg font-bold">${totalExpenses.toFixed(2)}</p>
+                <p className="text-red-100 text-xs sm:text-sm font-medium">Expenses</p>
+                <p className="text-lg sm:text-xl font-bold">${totalExpenses.toFixed(2)}</p>
               </div>
-              <Tag className="w-6 h-6 text-red-200" />
+              <Tag className="w-6 h-6 sm:w-7 sm:h-7 text-red-200" />
             </div>
           </div>
 
           <div className="bg-gradient-to-br from-blue-400 to-blue-600 p-4 rounded-lg shadow text-white">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-100 text-xs font-medium">Remaining</p>
-                <p className="text-lg font-bold">${remainingBudget.toFixed(2)}</p>
+                <p className="text-blue-100 text-xs sm:text-sm font-medium">Remaining</p>
+                <p className="text-lg sm:text-xl font-bold">${remainingBudget.toFixed(2)}</p>
               </div>
-              <Calendar className="w-6 h-6 text-blue-200" />
+              <Calendar className="w-6 h-6 sm:w-7 sm:h-7 text-blue-200" />
             </div>
           </div>
         </div>
@@ -668,7 +676,7 @@ export default function App() {
         {/* Budget progress bar */}
         {currentUserData.budgetSet && (
           <div className="mb-4">
-            <div className="flex justify-between text-xs text-gray-600 mb-1">
+            <div className="flex justify-between text-xs sm:text-sm text-gray-600 mb-1">
               <span>Spent: ${totalExpenses.toFixed(2)}</span>
               <span>Remaining: ${remainingBudget.toFixed(2)}</span>
             </div>
@@ -682,9 +690,9 @@ export default function App() {
         )}
 
         {/* Budget setting - only show if not set */}
-        {!currentUserData.budgetSet && (
+        {!currentUserData.budgetSet && !isViewer && (
           <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">Set Your Budget</h2>
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3">Set Your Budget</h2>
             <div className="flex flex-col gap-2">
               <input
                 type="number"
@@ -705,7 +713,7 @@ export default function App() {
         )}
 
         {/* Add expense button */}
-        {currentUserData.budgetSet && (
+        {canEdit && (
           <div className="mb-4">
             <button
               onClick={() => {
@@ -727,8 +735,8 @@ export default function App() {
         {showStats && (
           <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-gray-900 flex items-center">
-                <PieChart className="mr-2 w-4 h-4" />
+              <h3 className="text-sm sm:text-base font-medium text-gray-900 flex items-center">
+                <PieChart className="mr-2 w-4 h-4 sm:w-5 sm:h-5" />
                 Spending by Category
               </h3>
               <button
@@ -742,7 +750,7 @@ export default function App() {
             <div className="space-y-3">
               {categorySpending.map(({ category, amount, percentage }) => (
                 <div key={category} className="space-y-1">
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-sm sm:text-base">
                     <span className="font-medium">{category}</span>
                     <span>${amount.toFixed(2)} ({percentage.toFixed(1)}%)</span>
                   </div>
@@ -761,11 +769,11 @@ export default function App() {
         {/* All users overview */}
         {showAllUsers && (
           <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 flex items-center">
               <Users className="mr-2 w-5 h-5 text-blue-600" />
               All Users
             </h2>
-            <div className="grid grid-cols-1 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {allUsersStats.map((user) => (
                 <div
                   key={user.email}
@@ -783,10 +791,10 @@ export default function App() {
                         {getInitials(user.email)}
                       </div>
                       <div className="truncate">
-                        <p className="text-sm font-medium text-gray-900 truncate">
+                        <p className="text-sm sm:text-base font-medium text-gray-900 truncate">
                           {user.email.split('@')[0]}
                         </p>
-                        <span className={`text-xs ${user.role === 'Admin' ? 'text-purple-600' : 'text-green-600'
+                        <span className={`text-xs ${user.role === 'Admin' ? 'text-purple-600' : user.role === 'Viewer' ? 'text-gray-500' : 'text-green-600'
                           }`}>
                           {user.role}
                         </span>
@@ -794,15 +802,15 @@ export default function App() {
                     </div>
                   </div>
                   <div className="space-y-1.5">
-                    <div className="flex justify-between text-xs">
+                    <div className="flex justify-between text-xs sm:text-sm">
                       <span className="text-gray-600">Budget:</span>
                       <span className="font-medium">${user.budget.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between text-xs">
+                    <div className="flex justify-between text-xs sm:text-sm">
                       <span className="text-gray-600">Spent:</span>
                       <span className="font-medium text-red-600">${user.totalExpenses.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between text-xs">
+                    <div className="flex justify-between text-xs sm:text-sm">
                       <span className="text-gray-600">Remaining:</span>
                       <span className={`font-medium ${user.remaining >= 0 ? 'text-green-600' : 'text-red-600'
                         }`}>
@@ -816,108 +824,111 @@ export default function App() {
           </div>
         )}
 
-
-
         {/* Expense lists */}
         <div className="space-y-4">
           {/* User's expenses */}
-          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Your Expenses</h2>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => requestSort('amount')}
-                  className="flex items-center text-xs px-2 py-1 bg-gray-100 rounded-lg"
-                >
-                  Amount {sortConfig.key === 'amount' && (
-                    sortConfig.direction === 'asc' ? <ArrowUp size={12} className="ml-1" /> : <ArrowDown size={12} className="ml-1" />
-                  )}
-                </button>
-                <button
-                  onClick={() => requestSort('timestamp')}
-                  className="flex items-center text-xs px-2 py-1 bg-gray-100 rounded-lg"
-                >
-                  Date {sortConfig.key === 'timestamp' && (
-                    sortConfig.direction === 'asc' ? <ArrowUp size={12} className="ml-1" /> : <ArrowDown size={12} className="ml-1" />
-                  )}
-                </button>
+          {!isViewer && (
+            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Your Expenses</h2>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => requestSort('amount')}
+                    className="flex items-center text-xs sm:text-sm px-2 py-1 bg-gray-100 rounded-lg"
+                  >
+                    Amount {sortConfig.key === 'amount' && (
+                      sortConfig.direction === 'asc' ? <ArrowUp size={12} className="ml-1" /> : <ArrowDown size={12} className="ml-1" />
+                    )}
+                  </button>
+                  <button
+                    onClick={() => requestSort('timestamp')}
+                    className="flex items-center text-xs sm:text-sm px-2 py-1 bg-gray-100 rounded-lg"
+                  >
+                    Date {sortConfig.key === 'timestamp' && (
+                      sortConfig.direction === 'asc' ? <ArrowUp size={12} className="ml-1" /> : <ArrowDown size={12} className="ml-1" />
+                    )}
+                  </button>
+                </div>
               </div>
-            </div>
-            {currentUserData.expenses.length > 0 ? (
-              <div className="space-y-2">
-                {currentUserData.expenses
-                  .sort((a, b) => {
-                    if (sortConfig.key === 'amount') {
-                      return sortConfig.direction === 'asc'
-                        ? a.amount - b.amount
-                        : b.amount - a.amount;
-                    } else {
-                      return sortConfig.direction === 'asc'
-                        ? new Date(a.timestamp) - new Date(b.timestamp)
-                        : new Date(b.timestamp) - new Date(a.timestamp);
-                    }
-                  })
-                  .map(expense => (
-                    <div key={expense.id} className="p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-all">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-1.5 mb-1.5">
-                            <span
-                              className="text-sm font-medium text-gray-900 cursor-pointer hover:underline"
-                              onClick={() => {
-                                setFullDescription(expense.description);
-                                setShowDescriptionDialog(true);
-                              }}
-                            >
-                              {truncateDescription(expense.description)}
-                            </span>
-                            <span className="px-1.5 py-0.5 text-xs bg-blue-100 text-blue-800 rounded-full">
-                              {expense.category}
-                            </span>
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            {formatDate(expense.timestamp)}
-                            {expense.edited && (
-                              <span className="ml-2 text-gray-400 italic">
-                                (edited {formatDate(expense.editedAt)})
+              {currentUserData.expenses.length > 0 ? (
+                <div className="space-y-2">
+                  {currentUserData.expenses
+                    .sort((a, b) => {
+                      if (sortConfig.key === 'amount') {
+                        return sortConfig.direction === 'asc'
+                          ? a.amount - b.amount
+                          : b.amount - a.amount;
+                      } else {
+                        return sortConfig.direction === 'asc'
+                          ? new Date(a.timestamp) - new Date(b.timestamp)
+                          : new Date(b.timestamp) - new Date(a.timestamp);
+                      }
+                    })
+                    .map(expense => (
+                      <div key={expense.id} className="p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-all">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-1.5 mb-1.5">
+                              <span
+                                className="text-sm sm:text-base font-medium text-gray-900 cursor-pointer hover:underline"
+                                onClick={() => {
+                                  setFullDescription(expense.description);
+                                  setShowDescriptionDialog(true);
+                                }}
+                              >
+                                {truncateDescription(expense.description)}
                               </span>
+                              <span className="px-1.5 py-0.5 text-xs sm:text-sm bg-blue-100 text-blue-800 rounded-full">
+                                {expense.category}
+                              </span>
+                            </div>
+                            <div className="text-xs sm:text-sm text-gray-500">
+                              {formatDate(expense.timestamp)}
+                              {expense.edited && (
+                                <span className="ml-2 text-gray-400 italic">
+                                  (edited {formatDate(expense.editedAt)})
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2 ml-3">
+                            <span className="text-sm sm:text-base font-semibold text-red-600">${expense.amount.toFixed(2)}</span>
+                            {canEdit && (
+                              <button
+                                onClick={() => handleEditExpense(expense)}
+                                className="text-blue-500 hover:text-blue-700 text-xs px-2 py-0.5 rounded-md hover:bg-blue-50 transition-all"
+                              >
+                                <Edit size={14} />
+                              </button>
                             )}
                           </div>
                         </div>
-                        <div className="flex items-center space-x-2 ml-3">
-                          <span className="text-sm font-semibold text-red-600">${expense.amount.toFixed(2)}</span>
-                          <button
-                            onClick={() => handleEditExpense(expense)}
-                            className="text-blue-500 hover:text-blue-700 text-xs px-2 py-0.5 rounded-md hover:bg-blue-50 transition-all"
-                          >
-                            <Edit size={14} />
-                          </button>
-                        </div>
                       </div>
-                    </div>
-                  ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <div className="text-gray-400 mb-3">
-                  <Tag size={40} className="mx-auto" />
+                    ))}
                 </div>
-                <p className="text-gray-500 text-sm">No expenses yet</p>
-                <p className="text-gray-400 text-xs">Start tracking your spending!</p>
-              </div>
-            )}
-          </div>
+              ) : (
+                <div className="text-center py-8">
+                  <div className="text-gray-400 mb-3">
+                    <Tag size={40} className="mx-auto" />
+                  </div>
+                  <p className="text-gray-500 text-sm sm:text-base">No expenses yet</p>
+                  <p className="text-gray-400 text-xs sm:text-sm">Start tracking your spending!</p>
+                </div>
+              )}
+            </div>
+          )}
 
+          {/* Search and filters section */}
           <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-4">
             {/* Search bar */}
             <div className="flex items-center mb-3">
               <Search className="w-5 h-5 text-gray-400 mr-2" />
               <input
                 type="text"
-                placeholder="Search expenses by description, category, or user..."
+                placeholder="Search expenses..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="flex-1 px-3 py-2 text-gray-700 bg-gray-50 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="flex-1 px-3 py-2 text-sm text-gray-700 bg-gray-50 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
               <button
                 onClick={() => setShowFilters(!showFilters)}
@@ -925,23 +936,23 @@ export default function App() {
                   }`}
                 title="Toggle filters"
               >
-                <Tag size={18} />
+                <Tag size={16} />
                 {getActiveFilterCount() > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center">
                     {getActiveFilterCount()}
                   </span>
                 )}
               </button>
               <button
                 onClick={exportToCSV}
-                disabled={exporting}
-                className="ml-2 p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                title="Export to CSV"
+                disabled={exporting || isViewer}
+                className={`ml-1 p-1.5 rounded-lg transition-colors ${isViewer ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}`}
+                title={isViewer ? "Viewers cannot export data" : "Export to CSV"}
               >
                 {exporting ? (
-                  <div className="animate-spin h-4 w-4 border-b-2 border-gray-500 rounded-full"></div>
+                  <div className="animate-spin h-3 w-3 border-b-2 border-gray-500 rounded-full"></div>
                 ) : (
-                  <Download size={18} />
+                  <Download size={16} />
                 )}
               </button>
             </div>
@@ -951,15 +962,15 @@ export default function App() {
               <div className="border-t pt-4 space-y-4">
                 {/* Category filters */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Categories</label>
+                  <label className="block text-sm sm:text-base font-medium text-gray-700 mb-2">Categories</label>
                   <div className="flex flex-wrap gap-2">
                     {categories.map(category => (
                       <button
                         key={category}
                         onClick={() => toggleCategory(category)}
-                        className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${selectedCategories.includes(category)
-                            ? 'bg-blue-100 text-blue-800 border border-blue-200'
-                            : 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200'
+                        className={`px-3 py-1 rounded-full text-xs sm:text-sm font-medium transition-colors ${selectedCategories.includes(category)
+                          ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                          : 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200'
                           }`}
                       >
                         {category}
@@ -970,15 +981,15 @@ export default function App() {
 
                 {/* User filters */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Users</label>
+                  <label className="block text-sm sm:text-base font-medium text-gray-700 mb-2">Users</label>
                   <div className="flex flex-wrap gap-2">
                     {Object.keys(usersData).map(userEmail => (
                       <button
                         key={userEmail}
                         onClick={() => toggleUserFilter(userEmail)}
-                        className={`flex items-center px-3 py-1 rounded-full text-sm font-medium transition-colors ${selectedUsers.includes(userEmail)
-                            ? 'bg-purple-100 text-purple-800 border border-purple-200'
-                            : 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200'
+                        className={`flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-medium transition-colors ${selectedUsers.includes(userEmail)
+                          ? 'bg-purple-100 text-purple-800 border border-purple-200'
+                          : 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200'
                           }`}
                       >
                         <div
@@ -992,9 +1003,9 @@ export default function App() {
                 </div>
 
                 {/* Date range filter */}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">From Date</label>
+                    <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">From Date</label>
                     <input
                       type="date"
                       value={dateRange.start}
@@ -1003,7 +1014,7 @@ export default function App() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">To Date</label>
+                    <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">To Date</label>
                     <input
                       type="date"
                       value={dateRange.end}
@@ -1014,9 +1025,9 @@ export default function App() {
                 </div>
 
                 {/* Amount range filter */}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Min Amount ($)</label>
+                    <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Min Amount ($)</label>
                     <input
                       type="number"
                       placeholder="0.00"
@@ -1028,7 +1039,7 @@ export default function App() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Max Amount ($)</label>
+                    <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Max Amount ($)</label>
                     <input
                       type="number"
                       placeholder="1000.00"
@@ -1043,19 +1054,19 @@ export default function App() {
 
                 {/* Filter actions */}
                 <div className="flex justify-between items-center pt-2 border-t">
-                  <div className="text-sm text-gray-600">
+                  <div className="text-xs sm:text-sm text-gray-600">
                     Showing {filteredExpenses.length} of {allExpensesWithUsers.length} expenses
                   </div>
                   <div className="flex space-x-2">
                     <button
                       onClick={clearAllFilters}
-                      className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                      className="px-3 py-1.5 text-xs sm:text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
                     >
                       Clear All
                     </button>
                     <button
                       onClick={() => setShowFilters(false)}
-                      className="px-3 py-1.5 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                      className="px-3 py-1.5 text-xs sm:text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
                     >
                       Apply Filters
                     </button>
@@ -1120,136 +1131,138 @@ export default function App() {
               </div>
             )}
           </div>
+
           {/* All users' recent expenses */}
-          {
-            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center">
-                  <Users className="mr-2 w-5 h-5 text-purple-600" />
-                  Recent Activity
-                </h2>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => requestSort('amount')}
-                    className="flex items-center text-xs px-2 py-1 bg-gray-100 rounded-lg"
-                  >
-                    Amount {sortConfig.key === 'amount' && (
-                      sortConfig.direction === 'asc' ? <ArrowUp size={12} className="ml-1" /> : <ArrowDown size={12} className="ml-1" />
-                    )}
-                  </button>
-                  <button
-                    onClick={() => requestSort('timestamp')}
-                    className="flex items-center text-xs px-2 py-1 bg-gray-100 rounded-lg"
-                  >
-                    Date {sortConfig.key === 'timestamp' && (
-                      sortConfig.direction === 'asc' ? <ArrowUp size={12} className="ml-1" /> : <ArrowDown size={12} className="ml-1" />
-                    )}
-                  </button>
-                </div>
+          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 flex items-center">
+                <Users className="mr-2 w-5 h-5 text-purple-600" />
+                Recent Activity
+              </h2>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => requestSort('amount')}
+                  className="flex items-center text-xs sm:text-sm px-2 py-1 bg-gray-100 rounded-lg"
+                >
+                  Amount {sortConfig.key === 'amount' && (
+                    sortConfig.direction === 'asc' ? <ArrowUp size={12} className="ml-1" /> : <ArrowDown size={12} className="ml-1" />
+                  )}
+                </button>
+                <button
+                  onClick={() => requestSort('timestamp')}
+                  className="flex items-center text-xs sm:text-sm px-2 py-1 bg-gray-100 rounded-lg"
+                >
+                  Date {sortConfig.key === 'timestamp' && (
+                    sortConfig.direction === 'asc' ? <ArrowUp size={12} className="ml-1" /> : <ArrowDown size={12} className="ml-1" />
+                  )}
+                </button>
               </div>
-              {filteredExpenses.length > 0 ? (
-                <div className="space-y-2">
-                  {filteredExpenses.slice(0, visibleExpenseCount).map((expense, index) => (
-                    <div key={`${expense.id}-${index}`} className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
-                            <div
-                              className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs mr-1"
-                              style={{ backgroundColor: expense.userColor }}
-                            >
-                              {expense.userInitials}
-                            </div>
-                            <span className="text-sm font-medium text-gray-900">
-                              {expense.userName}
-                            </span>
-                            <span className="text-xs text-gray-500">
-                              {expense.userRole}
-                            </span>
+            </div>
+            {filteredExpenses.length > 0 ? (
+              <div className="space-y-2">
+                {filteredExpenses.slice(0, visibleExpenseCount).map((expense, index) => (
+                  <div key={`${expense.id}-${index}`} className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
+                          <div
+                            className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs mr-1"
+                            style={{ backgroundColor: expense.userColor }}
+                          >
+                            {expense.userInitials}
                           </div>
-                          <div className="flex items-center space-x-1.5 mb-1">
-                            <span
-                              className="text-sm text-gray-700 cursor-pointer hover:underline"
-                              onClick={() => {
-                                setFullDescription(expense.description);
-                                setShowDescriptionDialog(true);
-                              }}
-                            >
-                              {truncateDescription(expense.description)}
-                            </span>
-                            <span className="px-1.5 py-0.5 text-xs bg-blue-100 text-blue-800 rounded-full">
-                              {expense.category}
-                            </span>
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            {formatDate(expense.timestamp)}
-                            {expense.edited && (
-                              <span className="ml-2 text-gray-400 italic">
-                                (edited {formatDate(expense.editedAt)})
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <div className="ml-3">
-                          <span className="text-sm font-semibold text-red-600">
-                            ${expense.amount.toFixed(2)}
+                          <span className="text-sm sm:text-base font-medium text-gray-900">
+                            {expense.userName}
+                          </span>
+                          <span className="text-xs sm:text-sm text-gray-500">
+                            {expense.userRole}
                           </span>
                         </div>
+                        <div className="flex items-center space-x-1.5 mb-1">
+                          <span
+                            className="text-sm sm:text-base text-gray-700 cursor-pointer hover:underline"
+                            onClick={() => {
+                              if (!isViewer) {
+                                setFullDescription(expense.description);
+                                setShowDescriptionDialog(true);
+                              }
+                            }}
+                            style={{ cursor: isViewer ? 'default' : 'pointer' }}
+                          >
+                            {truncateDescription(expense.description)}
+                          </span>
+                          <span className="px-1.5 py-0.5 text-xs sm:text-sm bg-blue-100 text-blue-800 rounded-full">
+                            {expense.category}
+                          </span>
+                        </div>
+                        <div className="text-xs sm:text-sm text-gray-500">
+                          {formatDate(expense.timestamp)}
+                          {expense.edited && (
+                            <span className="ml-2 text-gray-400 italic">
+                              (edited {formatDate(expense.editedAt)})
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="ml-3">
+                        <span className="text-sm sm:text-base font-semibold text-red-600">
+                          ${expense.amount.toFixed(2)}
+                        </span>
                       </div>
                     </div>
-                  ))}
-
-                  {/* Show More/Less button */}
-                  {filteredExpenses.length > 10 && (
-                    <div className="text-center pt-3">
-                      <button
-                        onClick={() => {
-                          if (visibleExpenseCount >= filteredExpenses.length) {
-                            // If all expenses are shown, reset to show only 10
-                            setVisibleExpenseCount(10);
-                          } else {
-                            // Show 10 more expenses
-                            setVisibleExpenseCount(prev => Math.min(prev + 10, filteredExpenses.length));
-                          }
-                        }}
-                        className="flex items-center justify-center space-x-1 mx-auto px-3 py-1.5 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all"
-                      >
-                        <span>
-                          {visibleExpenseCount >= filteredExpenses.length
-                            ? 'Show Less'
-                            : `Show More (${Math.min(10, filteredExpenses.length - visibleExpenseCount)} more)`
-                          }
-                        </span>
-                        {visibleExpenseCount >= filteredExpenses.length ? (
-                          <ArrowUp size={16} />
-                        ) : (
-                          <ArrowDown size={16} />
-                        )}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <div className="text-gray-400 mb-3">
-                    <Users size={40} className="mx-auto" />
                   </div>
-                  <p className="text-gray-500 text-sm">No recent activity</p>
-                  <p className="text-gray-400 text-xs">Expenses will appear here</p>
+                ))}
+
+                {/* Show More/Less button */}
+                {filteredExpenses.length > 10 && (
+                  <div className="text-center pt-3">
+                    <button
+                      onClick={() => {
+                        if (visibleExpenseCount >= filteredExpenses.length) {
+                          // If all expenses are shown, reset to show only 10
+                          setVisibleExpenseCount(10);
+                        } else {
+                          // Show 10 more expenses
+                          setVisibleExpenseCount(prev => Math.min(prev + 10, filteredExpenses.length));
+                        }
+                      }}
+                      className="flex items-center justify-center space-x-1 mx-auto px-3 py-1.5 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all"
+                    >
+                      <span>
+                        {visibleExpenseCount >= filteredExpenses.length
+                          ? 'Show Less'
+                          : `Show More (${Math.min(10, filteredExpenses.length - visibleExpenseCount)} more)`
+                        }
+                      </span>
+                      {visibleExpenseCount >= filteredExpenses.length ? (
+                        <ArrowUp size={16} />
+                      ) : (
+                        <ArrowDown size={16} />
+                      )}
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="text-gray-400 mb-3">
+                  <Users size={40} className="mx-auto" />
                 </div>
-              )}
-            </div>
-          }
+                <p className="text-gray-500 text-sm sm:text-base">No recent activity</p>
+                <p className="text-gray-400 text-xs sm:text-sm">Expenses will appear here</p>
+              </div>
+            )}
+          </div>
         </div>
       </main>
 
       {/* Expense Dialog */}
-      {showExpenseDialog && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm  flex items-center justify-center p-4 z-50">
+      {showExpenseDialog && canEdit && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
             <div className="p-5">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
                   {editingExpense ? 'Edit Expense' : 'Add New Expense'}
                 </h2>
                 <button
@@ -1261,7 +1274,7 @@ export default function App() {
               </div>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Amount ($)</label>
+                  <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Amount ($)</label>
                   <input
                     type="number"
                     value={expenseAmount}
@@ -1273,7 +1286,7 @@ export default function App() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                  <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Description</label>
                   <input
                     type="text"
                     value={expenseDescription}
@@ -1283,7 +1296,7 @@ export default function App() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                  <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Category</label>
                   <select
                     value={expenseCategory}
                     onChange={(e) => setExpenseCategory(e.target.value)}
@@ -1315,7 +1328,7 @@ export default function App() {
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
             <div className="p-5">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">Expense Description</h2>
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Expense Description</h2>
                 <button
                   onClick={() => setShowDescriptionDialog(false)}
                   className="text-gray-400 hover:text-gray-500"
