@@ -10,8 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.81.1",
     "@tailwindcss/vite": "^4.1.10",
     "@vercel/analytics": "^1.5.0",
+    "firebase": "^12.5.0",
     "lucide-react": "^0.514.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
