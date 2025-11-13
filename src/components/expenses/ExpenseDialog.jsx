@@ -1,5 +1,5 @@
 import { Dialog } from '../common/Dialog';
-import { X } from 'lucide-react';
+import { X, Calendar } from 'lucide-react';
 import { Button } from '../common/Button';
 
 export const ExpenseDialog = ({
@@ -12,6 +12,8 @@ export const ExpenseDialog = ({
   setExpenseDescription,
   expenseCategory,
   setExpenseCategory,
+  expenseDate,
+  setExpenseDate,
   categories,
   handleAddExpense,
   handleUpdateExpense
@@ -43,12 +45,12 @@ export const ExpenseDialog = ({
       </div>
       <div>
         <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Description</label>
-        <input
-          type="text"
+        <textarea
           value={expenseDescription}
           onChange={(e) => setExpenseDescription(e.target.value)}
-          className="w-full px-3 py-2 text-gray-700 bg-gray-50 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+          className="w-full px-3 py-2 text-gray-700 bg-gray-50 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
           placeholder="What was this expense for?"
+          rows="3"
         />
       </div>
       <div>
@@ -63,6 +65,18 @@ export const ExpenseDialog = ({
             <option key={category} value={category} className='text-sm'>{category}</option>
           ))}
         </select>
+      </div>
+      <div>
+        <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Date</label>
+        <div className="relative">
+          <Calendar className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
+          <input
+            type="date"
+            value={expenseDate}
+            onChange={(e) => setExpenseDate(e.target.value)}
+            className="w-full pl-10 pr-3 py-2 text-gray-700 bg-gray-50 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+          />
+        </div>
       </div>
       <div className="pt-2">
         <Button

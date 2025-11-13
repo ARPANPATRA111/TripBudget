@@ -11,6 +11,8 @@ export const ExpenseList = ({
   canEdit,
   onViewDescription,
   onEdit,
+  onDelete,
+  currentUserId,
   visibleExpenseCount,
   setVisibleExpenseCount,
   icon: Icon = Tag
@@ -59,8 +61,10 @@ export const ExpenseList = ({
               key={expense.id}
               expense={expense}
               canEdit={canEdit}
-              onViewDescription={() => onViewDescription(expense.description)}
-              onEdit={() => onEdit(expense)}
+              onViewDescription={onViewDescription}
+              onEdit={onEdit}
+              onDelete={onDelete}
+              currentUserId={currentUserId}
             />
           ))}
 
