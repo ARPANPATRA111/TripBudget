@@ -62,7 +62,9 @@ export const Header = ({
             {showAllUsers ? <EyeOff size={16} /> : <Eye size={16} />}
           </button>
           <Button onClick={handleLogout} variant="danger">
-            Logout
+            <span className="inline-flex items-center justify-center w-full gap-1 sm:gap-2">
+              <span>Logout</span>
+            </span>
           </Button>
         </div>
       </div>
