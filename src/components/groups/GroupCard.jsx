@@ -1,4 +1,4 @@
-import { Copy, Check, Users, DollarSign, Calendar, Trash2, Mail, Settings } from 'lucide-react';
+import { Copy, Check, Users, IndianRupee, Calendar, Trash2, Mail, Settings } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '../common/Button';
 
@@ -85,10 +85,10 @@ export const GroupCard = ({ group, isAdmin, onDelete, onGenerateReport, onViewDe
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div className="bg-gray-50 rounded-lg p-3">
             <div className="flex items-center text-gray-500 text-xs mb-1">
-              <DollarSign className="w-3.5 h-3.5 mr-1" />
+              <IndianRupee className="w-3.5 h-3.5 mr-1" />
               <span>Budget</span>
             </div>
-            <p className="font-bold text-gray-900">${totalBudget.toFixed(2)}</p>
+            <p className="font-bold text-gray-900">₹{totalBudget.toFixed(2)}</p>
           </div>
           <div className="bg-gray-50 rounded-lg p-3">
             <div className="flex items-center text-gray-500 text-xs mb-1">
@@ -115,10 +115,10 @@ export const GroupCard = ({ group, isAdmin, onDelete, onGenerateReport, onViewDe
           </div>
           <div className="flex justify-between items-center mt-2 text-xs">
             <span className="text-gray-600">
-              Spent: <span className="font-semibold text-gray-900">${totalExpenses.toFixed(2)}</span>
+              Spent: <span className="font-semibold text-gray-900">₹{totalExpenses.toFixed(2)}</span>
             </span>
             <span className="text-gray-600">
-              Left: <span className="font-semibold text-gray-900">${remainingBudget.toFixed(2)}</span>
+              Left: <span className="font-semibold text-gray-900">₹{remainingBudget.toFixed(2)}</span>
             </span>
           </div>
         </div>

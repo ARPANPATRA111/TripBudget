@@ -1,11 +1,12 @@
 import { formatDate, truncateDescription } from '../../utils/helpers';
 import { getInitials, getColorFromEmail } from '../../utils/helpers';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2, IndianRupee } from 'lucide-react';
 
 export const ExpenseItem = ({ 
   expense, 
   canEdit, 
-  onViewDescription, 
+  onViewDescription,
+  onViewDetail, 
   onEdit,
   onDelete,
   currentUserId
@@ -15,7 +16,10 @@ export const ExpenseItem = ({
   const userEmail = expense.user_profiles?.email || expense.userEmail || '';
   
   return (
-    <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-all">
+    <div 
+      className="p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer"
+      onClick={() => onViewDetail && onViewDetail(expense)}
+    >
       <div className="flex justify-between items-start">
         <div className="flex-1">
           {/* Show user info */}
@@ -53,13 +57,17 @@ export const ExpenseItem = ({
           </div>
         </div>
         <div className="flex items-center space-x-2 ml-3">
-          <span className="text-sm sm:text-base font-semibold text-red-600">
-            ${parseFloat(expense.amount).toFixed(2)}
-          </span>
+          <div className="flex items-center text-sm sm:text-base font-semibold text-red-600">
+            <IndianRupee className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span>{parseFloat(expense.amount).toFixed(2)}</span>
+          </div>
           {canEdit && isMyExpense && (
             <div className="flex space-x-1">
               <button
-                onClick={() => onEdit(expense)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(expense);
+                }}
                 className="text-blue-500 hover:text-blue-700 text-xs px-2 py-0.5 rounded-md hover:bg-blue-50 transition-all"
                 title="Edit"
               >
@@ -67,7 +75,10 @@ export const ExpenseItem = ({
               </button>
               {onDelete && (
                 <button
-                  onClick={() => onDelete(expense.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(expense.id);
+                  }}
                   className="text-red-500 hover:text-red-700 text-xs px-2 py-0.5 rounded-md hover:bg-red-50 transition-all"
                   title="Delete"
                 >

@@ -5,11 +5,12 @@ import {
   updateExpense,
   deleteExpense,
 } from '../../utils/database';
-import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs, onSnapshot, query, where, orderBy, updateDoc } from 'firebase/firestore';
 import { db } from '../../utils/firebase';
 import { ExpenseDialog } from './ExpenseDialog';
 import { ExpenseList } from './ExpenseList';
 import { FiltersSection } from './FiltersSection';
+import { ExpenseDetailDialog } from './ExpenseDetailDialog';
 import { Plus, ArrowLeft, TrendingUp, Users as UsersIcon } from 'lucide-react';
 import { Button } from '../common/Button';
 import { CategoryStats } from '../stats/CategoryStats';
@@ -22,6 +23,8 @@ export const GroupExpensesView = ({ group, currentUserId, onBack }) => {
   const [showExpenseDialog, setShowExpenseDialog] = useState(false);
   const [editingExpense, setEditingExpense] = useState(null);
   const [showStats, setShowStats] = useState(false);
+  const [selectedExpense, setSelectedExpense] = useState(null);
+  const [showExpenseDetail, setShowExpenseDetail] = useState(false);
 
   // Expense form state
   const [expenseAmount, setExpenseAmount] = useState('');
@@ -38,28 +41,84 @@ export const GroupExpensesView = ({ group, currentUserId, onBack }) => {
   const [sortConfig, setSortConfig] = useState({ key: 'created_at', direction: 'desc' });
   const [visibleExpenseCount, setVisibleExpenseCount] = useState(10);
 
-  const categories = ['Food', 'Water', 'Taxi', 'Utilities', 'Rooms', 'Rafting', 'Entertainment', 'Shopping', 'Other'];
+  const [categories, setCategories] = useState(['Food', 'Transport', 'Accommodation', 'Activities', 'Shopping', 'Utilities', 'Entertainment', 'Other']);
 
   useEffect(() => {
-    if (group) {
-      fetchExpenses();
-      fetchMembers();
-    }
+    if (!group) return;
+
+    // Set up real-time listener for expenses
+    const expensesQuery = query(
+      collection(db, 'expenses'),
+      where('group_id', '==', group.id),
+      orderBy('expense_date', 'desc')
+    );
+
+    const unsubscribe = onSnapshot(expensesQuery, async (snapshot) => {
+      try {
+        const expensesData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+
+        // Enrich expenses with user profiles
+        const enrichedExpenses = await Promise.all(
+          expensesData.map(async (expense) => {
+            const userRef = doc(db, 'users', expense.paid_by);
+            const userSnap = await getDoc(userRef);
+            return {
+              ...expense,
+              user_id: expense.paid_by,
+              user_profiles: userSnap.exists()
+                ? { id: userSnap.id, ...userSnap.data() }
+                : { id: expense.paid_by, email: 'Unknown', full_name: 'Unknown' },
+            };
+          })
+        );
+
+        setExpenses(enrichedExpenses);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching expenses:', error);
+        setLoading(false);
+      }
+    });
+
+    fetchMembers();
+    fetchGroupCategories();
+
+    // Cleanup listener on unmount
+    return () => unsubscribe();
   }, [group]);
 
+  const fetchGroupCategories = async () => {
+    try {
+      const groupRef = doc(db, 'groups', group.id);
+      const groupSnap = await getDoc(groupRef);
+      
+      if (groupSnap.exists() && groupSnap.data().custom_categories) {
+        const customCategories = groupSnap.data().custom_categories || [];
+        const defaultCategories = ['Food', 'Transport', 'Accommodation', 'Activities', 'Shopping', 'Utilities', 'Entertainment', 'Other'];
+        const allCategories = [...new Set([...defaultCategories, ...customCategories])];
+        setCategories(allCategories);
+      }
+    } catch (error) {
+      console.error('Error fetching group categories:', error);
+    }
+  };
+
   const fetchExpenses = async () => {
+    // Kept for manual refresh if needed
     try {
       const { data, error } = await getGroupExpenses(group.id);
       if (error) throw error;
 
-      // Enrich expenses with user profiles
       const enrichedExpenses = await Promise.all(
         (data || []).map(async (expense) => {
           const userRef = doc(db, 'users', expense.paid_by);
           const userSnap = await getDoc(userRef);
           return {
             ...expense,
-            user_id: expense.paid_by, // For backwards compatibility
+            user_id: expense.paid_by,
             user_profiles: userSnap.exists()
               ? { id: userSnap.id, ...userSnap.data() }
               : { id: expense.paid_by, email: 'Unknown', full_name: 'Unknown' },
@@ -70,8 +129,6 @@ export const GroupExpensesView = ({ group, currentUserId, onBack }) => {
       setExpenses(enrichedExpenses);
     } catch (error) {
       console.error('Error fetching expenses:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -104,18 +161,45 @@ export const GroupExpensesView = ({ group, currentUserId, onBack }) => {
 
   const handleAddExpense = async () => {
     const amount = parseFloat(expenseAmount);
-    if (isNaN(amount) || amount <= 0 || !expenseDescription.trim() || !expenseCategory) {
-      alert('Please fill in all expense details correctly');
+    const trimmedCategory = expenseCategory?.trim();
+    
+    if (isNaN(amount) || amount <= 0) {
+      alert('Please enter a valid amount');
+      return;
+    }
+    
+    if (!expenseDescription.trim()) {
+      alert('Please enter a description');
+      return;
+    }
+    
+    if (!trimmedCategory) {
+      alert('Please select or enter a category');
       return;
     }
 
     try {
+      // Add custom category to group if it's new
+      const defaultCategories = ['Food', 'Transport', 'Accommodation', 'Activities', 'Shopping', 'Utilities', 'Entertainment', 'Other'];
+      if (!defaultCategories.includes(trimmedCategory) && !categories.includes(trimmedCategory)) {
+        const groupRef = doc(db, 'groups', group.id);
+        const groupSnap = await getDoc(groupRef);
+        const currentCustomCategories = groupSnap.data()?.custom_categories || [];
+        
+        if (!currentCustomCategories.includes(trimmedCategory)) {
+          await updateDoc(groupRef, {
+            custom_categories: [...currentCustomCategories, trimmedCategory]
+          });
+          setCategories([...categories, trimmedCategory]);
+        }
+      }
+
       const { error } = await createExpense({
         group_id: group.id,
         paid_by: currentUserId,
         amount: amount,
         description: expenseDescription.trim(),
-        category: expenseCategory,
+        category: trimmedCategory,
         expense_date: expenseDate,
       });
 
@@ -192,6 +276,11 @@ export const GroupExpensesView = ({ group, currentUserId, onBack }) => {
     setExpenseDescription('');
     setExpenseCategory('');
     setExpenseDate(new Date().toISOString().split('T')[0]);
+  };
+
+  const handleViewExpenseDetail = (expense) => {
+    setSelectedExpense(expense);
+    setShowExpenseDetail(true);
   };
 
   // Computed values
@@ -322,19 +411,19 @@ export const GroupExpensesView = ({ group, currentUserId, onBack }) => {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
         <div className="bg-gradient-to-br from-blue-400 to-blue-600 p-3 sm:p-4 rounded-lg shadow text-white">
           <p className="text-blue-100 text-xs sm:text-sm font-medium mb-1">Total Budget</p>
-          <p className="text-lg sm:text-2xl font-bold">${group.total_budget.toFixed(2)}</p>
+          <p className="text-lg sm:text-2xl font-bold">₹{group.total_budget.toFixed(2)}</p>
         </div>
         <div className="bg-gradient-to-br from-red-400 to-red-600 p-3 sm:p-4 rounded-lg shadow text-white">
           <p className="text-red-100 text-xs sm:text-sm font-medium mb-1">Total Spent</p>
-          <p className="text-lg sm:text-2xl font-bold">${totalExpenses.toFixed(2)}</p>
+          <p className="text-lg sm:text-2xl font-bold">₹{totalExpenses.toFixed(2)}</p>
         </div>
         <div className="bg-gradient-to-br from-green-400 to-green-600 p-3 sm:p-4 rounded-lg shadow text-white">
           <p className="text-green-100 text-xs sm:text-sm font-medium mb-1">Remaining</p>
-          <p className="text-lg sm:text-2xl font-bold">${remainingBudget.toFixed(2)}</p>
+          <p className="text-lg sm:text-2xl font-bold">₹{remainingBudget.toFixed(2)}</p>
         </div>
         <div className="bg-gradient-to-br from-purple-400 to-purple-600 p-3 sm:p-4 rounded-lg shadow text-white">
           <p className="text-purple-100 text-xs sm:text-sm font-medium mb-1">Your Spending</p>
-          <p className="text-lg sm:text-2xl font-bold">${myTotalExpenses.toFixed(2)}</p>
+          <p className="text-lg sm:text-2xl font-bold">₹{myTotalExpenses.toFixed(2)}</p>
         </div>
       </div>
 
@@ -405,6 +494,7 @@ export const GroupExpensesView = ({ group, currentUserId, onBack }) => {
         canEdit={true}
         onEdit={handleEditExpense}
         onDelete={handleDeleteExpense}
+        onViewDetail={handleViewExpenseDetail}
         currentUserId={currentUserId}
       />
 
@@ -435,6 +525,7 @@ export const GroupExpensesView = ({ group, currentUserId, onBack }) => {
         sortConfig={sortConfig}
         requestSort={requestSort}
         canEdit={false}
+        onViewDetail={handleViewExpenseDetail}
         currentUserId={currentUserId}
         icon={UsersIcon}
         visibleExpenseCount={visibleExpenseCount}
@@ -457,6 +548,13 @@ export const GroupExpensesView = ({ group, currentUserId, onBack }) => {
         categories={categories}
         handleAddExpense={handleAddExpense}
         handleUpdateExpense={handleUpdateExpense}
+      />
+
+      {/* Expense Detail Dialog */}
+      <ExpenseDetailDialog
+        isOpen={showExpenseDetail}
+        onClose={() => setShowExpenseDetail(false)}
+        expense={selectedExpense}
       />
     </div>
   );

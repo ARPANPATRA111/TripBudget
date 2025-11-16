@@ -1,5 +1,5 @@
 import { Button } from '../common/Button';
-import { DollarSign } from 'lucide-react';
+import { IndianRupee } from 'lucide-react';
 
 export const Login = ({ error, handleGoogleSignIn, loading }) => (
   <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen flex items-center justify-center p-4 sm:p-6">
@@ -7,7 +7,7 @@ export const Login = ({ error, handleGoogleSignIn, loading }) => (
       <div className="bg-white p-8 sm:p-10 rounded-3xl shadow-2xl border border-gray-100">
         <div className="text-center mb-8 sm:mb-10">
           <div className="mx-auto w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-3xl flex items-center justify-center mb-5 sm:mb-6 shadow-xl transform hover:scale-105 transition-transform">
-            <DollarSign className="w-10 h-10 sm:w-12 sm:h-12 text-white" strokeWidth={2.5} />
+            <IndianRupee className="w-10 h-10 sm:w-12 sm:h-12 text-white" strokeWidth={2.5} />
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold mb-3">
             Trip Budget Tracker

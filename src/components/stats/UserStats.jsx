@@ -43,17 +43,17 @@ export const UserStats = ({
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs sm:text-sm">
               <span className="text-gray-600">Budget:</span>
-              <span className="font-medium">${user.budget.toFixed(2)}</span>
+              <span className="font-medium">₹{user.budget.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-xs sm:text-sm">
               <span className="text-gray-600">Spent:</span>
-              <span className="font-medium text-red-600">${user.totalExpenses.toFixed(2)}</span>
+              <span className="font-medium text-red-600">₹{user.totalExpenses.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-xs sm:text-sm">
               <span className="text-gray-600">Remaining:</span>
               <span className={`font-medium ${user.remaining >= 0 ? 'text-green-600' : 'text-red-600'
-                }`}>
-                ${user.remaining.toFixed(2)}
+              }`}>
+                ₹{user.remaining.toFixed(2)}
               </span>
             </div>
           </div>

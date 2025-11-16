@@ -49,7 +49,7 @@ export const Header = ({
             title="Overall Trip Budget"
             className="px-2 py-1 text-xs sm:text-sm font-medium bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200"
           >
-            ${totalBudget.toFixed(2)}
+            ₹{totalBudget.toFixed(2)}
           </button>
           <button
             onClick={() => setShowAllUsers(!showAllUsers)}

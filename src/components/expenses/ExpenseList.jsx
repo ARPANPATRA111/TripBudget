@@ -10,6 +10,7 @@ export const ExpenseList = ({
   requestSort,
   canEdit,
   onViewDescription,
+  onViewDetail,
   onEdit,
   onDelete,
   currentUserId,
@@ -62,6 +63,7 @@ export const ExpenseList = ({
               expense={expense}
               canEdit={canEdit}
               onViewDescription={onViewDescription}
+              onViewDetail={onViewDetail}
               onEdit={onEdit}
               onDelete={onDelete}
               currentUserId={currentUserId}

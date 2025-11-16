@@ -119,7 +119,7 @@ export const generateTripLogHTML = (tripLogData) => {
     .map(([category, amount]) => `
       <tr>
         <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${category}</td>
-        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">$${amount.toFixed(2)}</td>
+        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">₹${amount.toFixed(2)}</td>
         <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">
           ${((amount / stats.totalBudget) * 100).toFixed(1)}%
         </td>
@@ -132,7 +132,7 @@ export const generateTripLogHTML = (tripLogData) => {
       <tr>
         <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${data.name}</td>
         <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">${data.count}</td>
-        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">$${data.total.toFixed(2)}</td>
+        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">₹${data.total.toFixed(2)}</td>
       </tr>
     `).join('');
 
@@ -143,7 +143,7 @@ export const generateTripLogHTML = (tripLogData) => {
         <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${exp.user_profiles.full_name || exp.user_profiles.email}</td>
         <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${exp.category}</td>
         <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${exp.description}</td>
-        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">$${parseFloat(exp.amount).toFixed(2)}</td>
+        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">₹${parseFloat(exp.amount).toFixed(2)}</td>
       </tr>
     `).join('');
 
@@ -167,15 +167,15 @@ export const generateTripLogHTML = (tripLogData) => {
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
       <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #10b981;">
         <p style="margin: 0; color: #6b7280; font-size: 14px;">Total Budget</p>
-        <p style="margin: 5px 0 0 0; font-size: 24px; font-weight: bold; color: #10b981;">$${stats.totalBudget.toFixed(2)}</p>
+        <p style="margin: 5px 0 0 0; font-size: 24px; font-weight: bold; color: #10b981;">₹${stats.totalBudget.toFixed(2)}</p>
       </div>
       <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #ef4444;">
         <p style="margin: 0; color: #6b7280; font-size: 14px;">Total Spent</p>
-        <p style="margin: 5px 0 0 0; font-size: 24px; font-weight: bold; color: #ef4444;">$${stats.totalExpenses.toFixed(2)}</p>
+        <p style="margin: 5px 0 0 0; font-size: 24px; font-weight: bold; color: #ef4444;">₹${stats.totalExpenses.toFixed(2)}</p>
       </div>
       <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6;">
         <p style="margin: 0; color: #6b7280; font-size: 14px;">Remaining</p>
-        <p style="margin: 5px 0 0 0; font-size: 24px; font-weight: bold; color: #3b82f6;">$${stats.remainingBudget.toFixed(2)}</p>
+        <p style="margin: 5px 0 0 0; font-size: 24px; font-weight: bold; color: #3b82f6;">₹${stats.remainingBudget.toFixed(2)}</p>
       </div>
     </div>
   </div>

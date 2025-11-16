@@ -24,7 +24,7 @@ export const CategoryStats = ({
         <div key={category} className="space-y-1">
           <div className="flex justify-between text-sm sm:text-base">
             <span className="font-medium">{category}</span>
-            <span>${amount.toFixed(2)} ({percentage.toFixed(1)}%)</span>
+            <span>₹{amount.toFixed(2)} ({percentage.toFixed(1)}%)</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div

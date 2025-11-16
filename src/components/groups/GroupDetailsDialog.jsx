@@ -1,4 +1,4 @@
-import { X, Users, DollarSign, Calendar, Mail, Crown } from 'lucide-react';
+import { X, Users, IndianRupee, Calendar, Mail, Crown } from 'lucide-react';
 import { Dialog } from '../common/Dialog';
 import { useState, useEffect } from 'react';
 import { Button } from '../common/Button';
@@ -169,7 +169,7 @@ export const GroupDetailsDialog = ({ isOpen, onClose, group, currentUserId, onUp
           {editMode && isAdmin ? (
             <div className="space-y-3">
               <div className="flex items-center space-x-2">
-                <DollarSign className="w-5 h-5 text-gray-400" />
+                <IndianRupee className="w-5 h-5 text-gray-400" />
                 <input
                   type="number"
                   value={newBudget}
@@ -208,15 +208,15 @@ export const GroupDetailsDialog = ({ isOpen, onClose, group, currentUserId, onUp
               <div className="grid grid-cols-3 gap-3 text-center">
                 <div>
                   <p className="text-xs text-gray-500 mb-1">Budget</p>
-                  <p className="font-bold text-gray-900">${totalBudget.toFixed(2)}</p>
+                  <p className="font-bold text-gray-900">₹{totalBudget.toFixed(2)}</p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 mb-1">Spent</p>
-                  <p className="font-bold text-red-600">${totalExpenses.toFixed(2)}</p>
+                  <p className="font-bold text-red-600">₹{totalExpenses.toFixed(2)}</p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 mb-1">Remaining</p>
-                  <p className="font-bold text-green-600">${remainingBudget.toFixed(2)}</p>
+                  <p className="font-bold text-green-600">₹{remainingBudget.toFixed(2)}</p>
                 </div>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2.5">

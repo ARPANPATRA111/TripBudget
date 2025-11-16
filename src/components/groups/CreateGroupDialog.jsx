@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Dialog } from '../common/Dialog';
 import { Button } from '../common/Button';
-import { X, Users, DollarSign } from 'lucide-react';
+import { X, Users, IndianRupee } from 'lucide-react';
 
 export const CreateGroupDialog = ({ isOpen, onClose, onCreate }) => {
   const [tripName, setTripName] = useState('');
@@ -81,7 +81,7 @@ export const CreateGroupDialog = ({ isOpen, onClose, onCreate }) => {
             Total Budget ($) *
           </label>
           <div className="relative">
-            <DollarSign className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+            <IndianRupee className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
             <input
               type="number"
               value={totalBudget}

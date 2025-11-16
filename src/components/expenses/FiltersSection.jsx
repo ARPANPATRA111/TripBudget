@@ -1,8 +1,7 @@
-import { Search, X, Tag, Download, Filter, Sliders } from 'lucide-react';
+import { Search, X, Tag, Download } from 'lucide-react';
 import { Button } from '../common/Button';
 import { useState } from 'react';
 import { exportExpensesToCSV } from '../../utils/tripLog';
-import { CustomFiltersDialog } from '../filters/CustomFiltersDialog';
 
 export const FiltersSection = ({
   searchTerm,
@@ -23,7 +22,6 @@ export const FiltersSection = ({
   userId
 }) => {
   const [showFilters, setShowFilters] = useState(false);
-  const [showCustomFilters, setShowCustomFilters] = useState(false);
   const [exporting, setExporting] = useState(false);
 
   const toggleCategory = (category) => {
@@ -107,13 +105,6 @@ export const FiltersSection = ({
                 {getActiveFilterCount()}
               </span>
             )}
-          </button>
-          <button
-            onClick={() => setShowCustomFilters(true)}
-            className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
-            title="Custom filters"
-          >
-            <Sliders size={20} />
           </button>
           <button
             onClick={handleExport}
@@ -245,16 +236,6 @@ export const FiltersSection = ({
         )}
       </div>
 
-      {/* Custom Filters Dialog */}
-      <CustomFiltersDialog
-        isOpen={showCustomFilters}
-        onClose={() => setShowCustomFilters(false)}
-        groupId={groupId}
-        userId={userId}
-        categories={categories}
-        members={members}
-        onApplyFilter={handleApplyCustomFilter}
-      />
     </>
   );
 };
