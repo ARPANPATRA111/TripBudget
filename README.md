@@ -1,253 +1,482 @@
-# 🌟 Trip Budget Tracker 🛤️💰
+# 🌟 TripBudget - Collaborative Trip Expense Tracker
 
-A modern, collaborative expense tracking application for group trips with **Google OAuth authentication** and **real-time Firebase backend**. Track expenses, manage budgets, and generate detailed trip reports effortlessly!
+> A modern, real-time expense tracking application for group trips built with React, Firebase, and Tailwind CSS. Track expenses, manage budgets, and collaborate seamlessly with your travel companions!
 
-https://github.com/user-attachments/assets/198df506-37c1-4295-8f7f-b7991206c715
+![TripBudget Demo](./TripBudget.gif)
+
+[![React](https://img.shields.io/badge/React-19.1.0-blue?logo=react)](https://react.dev/)
+[![Firebase](https://img.shields.io/badge/Firebase-12.5.0-orange?logo=firebase)](https://firebase.google.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1.10-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+---
 
 ## ✨ Features
 
-### 🔐 Authentication & User Management
-- **Google OAuth Sign-In** - Secure, one-click authentication
-- **User Profiles** - Automatic profile creation with Google account info
-- **Role-Based Access** - Admin and member roles with appropriate permissions
+### 🔐 **Secure Authentication**
+- 🔑 **Google OAuth Sign-In** - One-click authentication with Google accounts
+- 👤 **Automatic Profile Creation** - User profiles generated from Google account info
+- 🛡️ **Firebase Security** - Enterprise-grade security with Firestore rules
 
-### 👥 Multi-Group Support
-- **Create Trip Groups** - Set trip name and total budget
-- **Invite Code System** - Join groups using unique invite codes
-- **Personal Dashboard** - View all your groups in one place
-- **Group Management** - Admins can manage members and delete groups
+### 👥 **Multi-Group Collaboration**
+- ➕ **Create Trip Groups** - Set trip names and budgets in Indian Rupees (₹)
+- 🎟️ **Invite Code System** - Share unique 6-digit codes to invite members
+- 📊 **Personal Dashboard** - View and manage all your trip groups
+- 🗑️ **Group Management** - Admins can manage settings and members
 
-### 💰 Expense Tracking
-- **Add Expenses** - Track who paid, amount, category, description, and date
-- **Edit/Delete** - Full CRUD operations on your own expenses
-- **Category System** - Predefined categories (Food, Taxi, Hotels, etc.)
-- **Real-Time Updates** - See expenses as they're added
+### 💰 **Smart Expense Tracking**
+- ✏️ **Add & Edit Expenses** - Track amount, description, category, and date
+- 🏷️ **Custom Categories** - Create group-specific expense categories beyond defaults
+- 🔄 **Real-Time Sync** - Live updates across all group members' devices
+- 👁️ **Expense Details** - View complete expense information with timestamps
+- 🗑️ **Expense Management** - Edit or delete your own expenses
 
-### 🔍 Advanced Filtering
-- **Smart Search** - Filter by description, category, or member name
-- **Date Range** - Filter expenses by date
-- **Amount Range** - Filter by expense amount
-- **Multi-Select Filters** - Category and member filters
-- **Custom Filters** - Save your favorite filter combinations
+### 🔍 **Powerful Filtering**
+- 🔎 **Smart Search** - Filter by description, category, or member name
+- 📅 **Date Range Filters** - View expenses within specific time periods
+- 💵 **Amount Filters** - Filter by expense ranges
+- 👥 **Member Filters** - See individual member contributions
+- 🏷️ **Category Filters** - Group expenses by spending categories
 
-### 📊 Statistics & Reports
-- **Budget Progress** - Visual progress bars for budget tracking
-- **Category Breakdown** - See spending by category
-- **Member Stats** - Track each member's contributions
-- **Trip Log Export** - Generate beautiful HTML reports with all trip data
+### 📊 **Analytics & Insights**
+- 📈 **Budget Progress Tracking** - Visual progress bars showing budget utilization
+- 🎯 **Category Breakdown** - Detailed spending analysis by category
+- 👤 **Member Statistics** - Individual contribution tracking
+- 💰 **Budget Alerts** - Real-time budget vs. spending comparison
 
-### 🎨 Modern UI/UX
-- **Responsive Design** - Works on desktop, tablet, and mobile
-- **Tailwind CSS** - Beautiful, modern styling
-- **Smooth Animations** - Polished user experience
-- **Dark Mode Ready** - Easy to add dark mode support
+### 📄 **Trip Reports**
+- 📥 **HTML Export** - Generate professional trip reports
+- 📊 **Comprehensive Data** - Complete expense lists, statistics, and summaries
+- 📧 **Shareable Reports** - Easy sharing with trip participants
+
+### 🎨 **Modern User Experience**
+- 📱 **Fully Responsive** - Optimized for mobile, tablet, and desktop
+- 🎭 **Tailwind CSS Styling** - Clean, modern, and accessible UI
+- 🔔 **Toast Notifications** - Non-intrusive success and error messages
+- ⚡ **Fast Performance** - Vite-powered build for instant hot reloading
+- 🇮🇳 **Indian Localization** - Rupee (₹) currency throughout
+
+---
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React 19, Vite 6
-- **Styling**: Tailwind CSS 4
-- **Backend**: Firebase (Firestore + Authentication)
-- **Authentication**: Google OAuth via Firebase Auth
-- **Icons**: Lucide React
-- **Package Manager**: pnpm
-- **Security**: Firestore Security Rules
+### **Frontend**
+- ⚛️ **React 19.1.0** - Latest React with concurrent features
+- ⚡ **Vite 6.3.5** - Lightning-fast build tool and dev server
+- 🎨 **Tailwind CSS 4.1.10** - Utility-first CSS framework
+- 🎯 **Lucide React** - Beautiful, consistent icon library
+- 🍞 **React Hot Toast** - Elegant toast notifications
+
+### **Backend & Services**
+- 🔥 **Firebase 12.5.0** - Backend-as-a-Service platform
+  - **Firestore** - NoSQL real-time database
+  - **Authentication** - Google OAuth integration
+  - **Security Rules** - Fine-grained access control
+- 📊 **Firestore Indexes** - Optimized query performance
+
+### **Development Tools**
+- 📦 **pnpm** - Fast, disk-efficient package manager
+- 🔍 **ESLint** - Code quality and consistency
+- 🔧 **Firebase CLI** - Deployment and management tools
+- 📈 **Vercel Analytics** - Performance monitoring
+
+---
 
 ## 🚀 Quick Start
 
-See [QUICKSTART.md](./QUICKSTART.md) for a 5-minute setup guide!
+### **Prerequisites**
 
-## 📋 Prerequisites
+Before you begin, ensure you have:
 
-- Node.js 18+ installed
-- pnpm installed (`npm install -g pnpm`)
-- Google account
-- Firebase account (free tier works great!)
+- ✅ **Node.js 18+** installed ([Download](https://nodejs.org/))
+- ✅ **pnpm** package manager (`npm install -g pnpm`)
+- ✅ **Google Account** for OAuth authentication
+- ✅ **Firebase Account** (free tier works perfectly!)
 
-## 📥 Installation
+### **Installation & Setup**
 
-### Option 1: Quick Setup (Recommended)
+#### **1️⃣ Clone the Repository**
 
-Follow the [QUICKSTART.md](./QUICKSTART.md) guide for a streamlined setup process!
+```bash
+git clone https://github.com/ARPANPATRA111/TripBudget.git
+cd TripBudget
+```
 
-### Option 2: Detailed Setup
+#### **2️⃣ Install Dependencies**
 
-1. **Clone the repository:**
+```bash
+pnpm install
+```
 
-   ```bash
-   git clone https://github.com/yourusername/trip-budget-tracker.git
-   cd trip-budget-tracker
-   ```
+#### **3️⃣ Create Firebase Project**
 
-2. **Install dependencies:**
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Click **"Add Project"** and follow the wizard
+3. Enable **Google Authentication**:
+   - Navigate to **Authentication** → **Sign-in method**
+   - Enable **Google** provider
+4. Create **Firestore Database**:
+   - Navigate to **Firestore Database**
+   - Click **"Create Database"**
+   - Choose **Production mode** (we'll add rules later)
+   - Select your preferred region
 
-   ```bash
-   pnpm install
-   ```
+#### **4️⃣ Configure Environment Variables**
 
-3. **Set up Firebase:**
+1. In Firebase Console, go to **Project Settings** → **General**
+2. Under **"Your apps"**, click the web icon (`</>`)
+3. Register your app and copy the config values
+4. Create `.env` file in project root:
 
-   Follow the comprehensive [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) guide which covers:
-   - Creating a Firebase project
-   - Enabling Google OAuth
-   - Setting up Firestore database
-   - Configuring security rules
-   - Getting your credentials
+```bash
+# Windows
+copy .env.example .env
 
-4. **Configure environment variables:**
+# macOS/Linux
+cp .env.example .env
+```
 
-   ```bash
-   # Copy the example file
-   copy .env.example .env
-   
-   # Edit .env and add your Firebase credentials
-   ```
+5. Add your Firebase credentials to `.env`:
 
-   Your `.env` should look like:
+```env
+VITE_FIREBASE_API_KEY=AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=123456789012
+VITE_FIREBASE_APP_ID=1:123456789012:web:abcdef123456
+```
 
-   ```env
-   VITE_FIREBASE_API_KEY=your-api-key
-   VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-   VITE_FIREBASE_PROJECT_ID=your-project-id
-   VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
-   VITE_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
-   VITE_FIREBASE_APP_ID=your-app-id
-   ```
+#### **5️⃣ Deploy Firestore Configuration**
 
-5. **Deploy Firestore security rules:**
+```bash
+# Login to Firebase
+firebase login
 
-   ```bash
-   firebase login
-   firebase init firestore
-   firebase deploy --only firestore:rules
-   ```
+# Initialize Firestore (select your project)
+firebase init firestore
 
-6. **Start the development server:**
+# Deploy security rules and indexes
+firebase deploy --only firestore:rules,firestore:indexes
+```
 
-   ```bash
-   pnpm run dev
-   ```
+#### **6️⃣ Start Development Server**
 
-   Open [http://localhost:5173](http://localhost:5173) in your browser!
+```bash
+pnpm run dev
+```
 
-## 🧑‍💻 Usage
+🎉 Open [http://localhost:5173](http://localhost:5173) in your browser!
 
-### 🔐 Authentication
+---
 
-1. Click **"Sign in with Google"**
+## 📖 How to Use
+
+### **🔐 Sign In**
+
+1. Click **"Sign in with Google"** on the login page
 2. Select your Google account
 3. Grant permissions
-4. You're in! Your profile is automatically created
+4. Your profile is automatically created!
 
-### 👥 Creating a Group
+### **👥 Create a Trip Group**
 
-1. Click **"Create Group"** on your dashboard
-2. Enter trip name (e.g., "Europe Trip 2025")
-3. Set total budget (e.g., $5000)
-4. Get your unique **invite code**
-5. Share the code with trip members!
+1. On your dashboard, click **"Create Group"**
+2. Enter trip details:
+   - **Trip Name** (e.g., "Goa Beach Trip 2025")
+   - **Total Budget** in Rupees (e.g., ₹50,000)
+3. You'll receive a unique **6-digit invite code**
+4. Share the code with your trip companions!
 
-### 🤝 Joining a Group
+### **🤝 Join an Existing Group**
 
 1. Click **"Join Group"** on your dashboard
-2. Enter the invite code
-3. You're now a member!
+2. Enter the 8-digit invite code
+3. You're instantly added as a member!
 
-### 💸 Adding Expenses
+### **💸 Add an Expense**
 
 1. Select a group from your dashboard
-2. Click **"Add Expense"**
-3. Fill in details:
-   - Amount
-   - Description
-   - Category
-   - Date
-4. Click **"Add"**
+2. Click the **"Add Expense"** button
+3. Fill in the expense details:
+   - **Amount** (in Rupees)
+   - **Description** (e.g., "Dinner at Beach Shack")
+   - **Category** (choose from dropdown or add custom)
+   - **Date** of the expense
+4. Click **"Add Expense"**
+5. The expense appears instantly for all group members!
 
-### 🔍 Filtering Expenses
+### **🏷️ Create Custom Categories**
 
-- **Search** by description or member name
-- **Filter by category** (Food, Taxi, Hotels, etc.)
-- **Filter by member** to see who spent what
-- **Date range** for specific time periods
-- **Amount range** for expense size
-- **Save custom filters** for quick access
+1. When adding an expense, select **"+ Add Custom Category"**
+2. Enter your category name (e.g., "Souvenirs", "Tips")
+3. Click the **Plus (+)** button to confirm
+4. The category is now available for everyone in the group!
 
-### 📊 Viewing Statistics
+### **🔍 Filter & Search Expenses**
 
-- See total spent vs. budget
-- View spending by category
-- Track each member's contributions
-- Monitor budget progress in real-time
+- **Search Bar**: Find expenses by description, category, or member name
+- **Category Filter**: View expenses from specific categories
+- **Member Filter**: See individual member contributions
+- **Date Range**: Filter expenses by time period
+- **Amount Range**: Find expenses within specific price ranges
 
-### 📄 Generating Reports
+### **📊 View Statistics**
 
-1. Select a group
-2. Click **"Generate Report"**
-3. Download beautiful HTML trip log with:
-   - Complete expense list
-   - Category breakdown
-   - Member statistics
-   - Budget summary
+- **Budget Progress**: Visual bars showing spent vs. remaining budget
+- **Category Breakdown**: Pie chart of spending by category
+- **Member Stats**: Individual contribution summaries
+- **Real-Time Updates**: Statistics update instantly as expenses are added
 
-### 🗑️ Managing Groups
+### **📄 Export Trip Report**
 
-**As Admin (creator):**
-- Delete group (auto-generates trip log first)
-- View all members
-- Manage group settings
+1. Open any group
+2. Click **"Generate Trip Log"** or delete the group
+3. Download a beautiful HTML report containing:
+   - Complete expense list with timestamps
+   - Category-wise breakdown
+   - Member contribution summary
+   - Budget vs. actual spending analysis
 
-**As Member:**
-- Add/edit/delete your own expenses
-- View group expenses
-- Leave group (coming soon)
+### **✏️ Edit or Delete Expenses**
+
+- Click on any of **your own expenses** to view details
+- Use **Edit** button to modify amount, description, category, or date
+- Use **Delete** button to remove the expense
+- Changes sync instantly across all devices
+
+### **🗑️ Manage Your Group**
+
+**As Group Admin (Creator):**
+
+- View all members and their profiles
+- Delete the group (automatically generates trip log first)
+- Monitor all group expenses and statistics
+
+**As Group Member:**
+
+- Add, edit, and delete your own expenses
+- View all group expenses and statistics
+- Access group budget and spending insights
+
+---
 
 ## 📂 Project Structure
 
+```plaintext
+TripBudget/
+├── src/
+│   ├── components/
+│   │   ├── auth/
+│   │   │   └── Login.jsx              # Google OAuth login component
+│   │   ├── budget/
+│   │   │   ├── BudgetCards.jsx        # Budget display cards
+│   │   │   ├── BudgetProgress.jsx     # Budget progress visualization
+│   │   │   └── SetBudgetForm.jsx      # Budget configuration form
+│   │   ├── common/
+│   │   │   ├── Avatar.jsx             # User avatar component
+│   │   │   ├── Button.jsx             # Reusable button component
+│   │   │   ├── Dialog.jsx             # Modal dialog component
+│   │   │   └── Loading.jsx            # Loading spinner
+│   │   ├── expenses/
+│   │   │   ├── ExpenseDialog.jsx      # Add/edit expense modal
+│   │   │   ├── ExpenseDetailDialog.jsx # View expense details
+│   │   │   ├── ExpenseItem.jsx        # Individual expense card
+│   │   │   ├── ExpenseList.jsx        # Expense list container
+│   │   │   ├── FiltersSection.jsx     # Filtering controls
+│   │   │   └── GroupExpensesView.jsx  # Main expenses view
+│   │   ├── groups/
+│   │   │   └── GroupCard.jsx          # Group display card
+│   │   ├── layout/
+│   │   │   └── Header.jsx             # App header with navigation
+│   │   └── stats/
+│   │       ├── CategoryStats.jsx      # Category breakdown stats
+│   │       └── UserStats.jsx          # Member statistics
+│   ├── utils/
+│   │   ├── auth.js                    # Firebase auth utilities
+│   │   ├── helpers.js                 # Helper functions
+│   │   ├── supabase.js                # Database operations
+│   │   └── tripLog.js                 # Trip report generation
+│   ├── App.jsx                        # Main app component
+│   ├── main.jsx                       # App entry point
+│   ├── App.css                        # Global styles
+│   └── index.css                      # Tailwind imports
+├── public/                            # Static assets
+├── firestore.rules                    # Firestore security rules
+├── firestore.indexes.json             # Database indexes
+├── firebase.json                      # Firebase configuration
+├── .env                               # Environment variables
+├── vite.config.js                     # Vite configuration
+├── package.json                       # Dependencies
+└── README.md                          # This file
 ```
-/src
-├── App.jsx               # Main application component
-├── main.jsx              # Application entry point
-/public                   # Static assets
-.env                      # Environment variables
-```
 
-## 🌍 Deployment
+---
 
-To deploy this project:
+## 🚢 Deployment
 
-1. Set up a hosting service (e.g., Vercel, Netlify).
-2. Configure environment variables in your hosting platform.
-3. Deploy using the platform's instructions.
+### **Deploy to Vercel (Recommended)**
 
-### Recommended deployment command:
+1. **Install Vercel CLI:**
+
+   ```bash
+   npm install -g vercel
+   ```
+
+2. **Build the project:**
+
+   ```bash
+   pnpm run build
+   ```
+
+3. **Deploy:**
+
+   ```bash
+   vercel
+   ```
+
+4. **Configure Environment Variables:**
+   - Go to your Vercel project dashboard
+   - Navigate to **Settings** → **Environment Variables**
+   - Add all `VITE_FIREBASE_*` variables from your `.env` file
+
+5. **Update Firebase Authorized Domains:**
+   - Go to Firebase Console → **Authentication** → **Settings**
+   - Add your Vercel domain (e.g., `your-app.vercel.app`) to authorized domains
+
+### **Deploy to Netlify**
+
+1. **Build the project:**
+
+   ```bash
+   pnpm run build
+   ```
+
+2. **Deploy using Netlify CLI:**
+
+   ```bash
+   npm install -g netlify-cli
+   netlify deploy --prod
+   ```
+
+3. **Configure Environment Variables** in Netlify dashboard
+
+### **Manual Build**
+
 ```bash
-npm run build && npm run preview
+# Build for production
+pnpm run build
+
+# Preview production build locally
+pnpm run preview
 ```
+
+---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please follow these steps:
+We welcome contributions! Here's how you can help:
 
-1. Fork the project.
-2. Create your feature branch:
+### **Getting Started**
+
+1. **Fork the repository**
+2. **Clone your fork:**
+
    ```bash
-   git checkout -b feature/AmazingFeature
+   git clone https://github.com/YOUR_USERNAME/TripBudget.git
    ```
-3. Commit your changes:
+
+3. **Create a feature branch:**
+
    ```bash
-   git commit -m 'Add some AmazingFeature'
+   git checkout -b feature/amazing-feature
    ```
-4. Push to the branch:
+
+4. **Make your changes and commit:**
+
    ```bash
-   git push origin feature/AmazingFeature
+   git commit -m 'Add: amazing new feature'
    ```
-5. Open a Pull Request.
+
+5. **Push to your fork:**
+
+   ```bash
+   git push origin feature/amazing-feature
+   ```
+
+6. **Open a Pull Request**
+
+### **Contribution Guidelines**
+
+- ✅ Follow existing code style and conventions
+- ✅ Write meaningful commit messages
+- ✅ Test your changes thoroughly
+- ✅ Update documentation if needed
+- ✅ Keep PRs focused on a single feature/fix
+
+---
+
+## 🐛 Known Issues & Roadmap
+
+### **Coming Soon**
+
+- [ ] Leave group functionality for members
+- [ ] Expense splitting algorithms (equal, custom, percentage)
+- [ ] Currency conversion support
+- [ ] Dark mode theme
+- [ ] Email notifications for new expenses
+- [ ] Mobile app (React Native)
+- [ ] Recurring expenses support
+- [ ] Receipt image upload
+
+### **Reporting Issues**
+
+Found a bug? [Open an issue](https://github.com/ARPANPATRA111/TripBudget/issues) with:
+
+- Clear description of the problem
+- Steps to reproduce
+- Expected vs. actual behavior
+- Screenshots (if applicable)
+
+---
 
 ## 📜 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
-## 📞 Contact
+---
 
-Project Maintainer: **Arpan Patra**  
-Project Link: [Trip Budget Tracker Repository](https://trip-budget.vercel.app/)
+## 👨‍💻 Author
+
+**Arpan Patra**
+
+- 🐙 GitHub: [ARPANPATRA111](https://github.com/ARPANPATRA111)
+- 📧 Email: [Thispc119@gmail.com](mailto:thispc119@gmail.com)
+- 🌐 Portfolio: [arpan111.vercel.app](https://arpan111.vercel.app)
+
+---
+
+## 🙏 Acknowledgments
+
+- [React](https://react.dev/) - UI library
+- [Firebase](https://firebase.google.com/) - Backend platform
+- [Tailwind CSS](https://tailwindcss.com/) - CSS framework
+- [Vite](https://vitejs.dev/) - Build tool
+- [Lucide Icons](https://lucide.dev/) - Icon library
+- [React Hot Toast](https://react-hot-toast.com/) - Toast notifications
+
+---
+
+## ⭐ Show Your Support
+
+If you find this project helpful, please consider giving it a ⭐ on GitHub!
+
+---
+
+<div align="center">
+
+**Built with ❤️ by [Arpan Patra](https://github.com/ARPANPATRA111)**
+
+[Report Bug](https://github.com/ARPANPATRA111/TripBudget/issues) • [Request Feature](https://github.com/ARPANPATRA111/TripBudget/issues) • [Documentation](https://github.com/ARPANPATRA111/TripBudget/wiki)
+
+</div>
